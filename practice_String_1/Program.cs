@@ -11,3 +11,6 @@ string emptyString = "";
 string stringWithSpaces = "   Hello   ";
 
 Console.WriteLine(emptyString);
+
+// Task 1
+Console.WriteLine(greeting);
