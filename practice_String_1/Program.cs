@@ -14,3 +14,5 @@ Console.WriteLine(emptyString);
 
 // Task 1
 Console.WriteLine(greeting);
+// Task 2
+Console.WriteLine(wordFromArray);
