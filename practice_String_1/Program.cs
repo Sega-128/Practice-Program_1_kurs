@@ -12,6 +12,8 @@ string stringWithSpaces = "   Hello   ";
 
 // commit 1
 // function 1 // DONE
+// commit 2
+// function 2
 Console.WriteLine(emptyString);
 
 // Task 1
