@@ -10,6 +10,8 @@ string emptyString = "";
 
 string stringWithSpaces = "   Hello   ";
 
+// commit 1
+// function 1 // DONE
 Console.WriteLine(emptyString);
 
 // Task 1
