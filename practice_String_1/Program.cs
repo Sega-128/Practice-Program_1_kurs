@@ -7,39 +7,53 @@ class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
 
-        string fuelType = FuelInput.GetFuelType();
-        double fuelPrice = FuelInput.GetFuelPrice(fuelType);
+        var fuelInput = new FuelInput();
+        string fuelType = fuelInput.GetFuelType();
+        double fuelPrice = fuelInput.GetFuelPrice(fuelType);
         if (fuelPrice == 0) return;
 
-        double consumption = UserInput.GetDoubleInput("Введіть витрату (л/100 км або кВт⋅год/100 км для електро): ");
-        double distance = UserInput.GetDoubleInput("Введіть пройдену відстань (км): ");
+        var userInput = new UserInput();
+        double consumption = userInput.GetDoubleInput("Введіть витрату (л/100 км або кВт⋅год/100 км для електро): ");
+        double distance = userInput.GetDoubleInput("Введіть пройдену відстань (км): ");
 
-        double totalCost = FuelCalculator.CalculateFuelCost(consumption, distance, fuelPrice);
+        var fuelCalculator = new FuelCalculator(consumption, distance, fuelPrice);
+        double totalCost = fuelCalculator.CalculateFuelCost();
         Console.WriteLine($"Витрати на паливо: {totalCost:F2} грн.");
 
-        int tripsPerMonth = UserInput.GetIntInput("Введіть кількість таких поїздок на місяць: ");
+        int tripsPerMonth = userInput.GetIntInput("Введіть кількість таких поїздок на місяць: ");
         double monthlyCost = totalCost * tripsPerMonth;
         double yearlyCost = monthlyCost * 12;
 
         Console.WriteLine($"Місячні витрати: {monthlyCost:F2} грн.");
         Console.WriteLine($"Річні витрати: {yearlyCost:F2} грн.");
 
-        string currency = CurrencyConverter.GetCurrency();
-        double currencyRate = CurrencyConverter.GetCurrencyRate(currency);
+        var currencyConverter = new CurrencyConverter();
+        string currency = currencyConverter.GetCurrency();
+        double currencyRate = currencyConverter.GetCurrencyRate(currency);
 
-        CurrencyConverter.DisplayConvertedCosts(totalCost, monthlyCost, yearlyCost, currency, currencyRate);
+        currencyConverter.DisplayConvertedCosts(totalCost, monthlyCost, yearlyCost, currency, currencyRate);
+
+
+        Console.WriteLine("Вихід з Main() - об'єкт FuelCalculator ще існує!");
+
+        //Console.WriteLine("Примусово викликаємо GC...");
+        //GC.Collect();
+        //GC.WaitForPendingFinalizers();
+
+        //Console.WriteLine("Програма завершена.");
     }
 }
 
-static class FuelInput
+class FuelInput
 {
-    public static string GetFuelType()
+    public FuelInput() { }
+    public string GetFuelType()
     {
         Console.Write("Введіть тип палива (бензин/дизель/газ/електрика): ");
         return Console.ReadLine().ToLower();
     }
 
-    public static double GetFuelPrice(string fuelType)
+    public double GetFuelPrice(string fuelType)
     {
         return fuelType switch
         {
@@ -51,16 +65,18 @@ static class FuelInput
         };
     }
 
-    public static double InvalidFuel()
+    private double InvalidFuel()
     {
         Console.WriteLine("Невідомий тип палива.");
         return 0;
     }
 }
 
-static class UserInput
+class UserInput
 {
-    public static double GetDoubleInput(string message)
+    public UserInput() { }
+
+    public double GetDoubleInput(string message)
     {
         Console.Write(message);
         if (!double.TryParse(Console.ReadLine(), out double value) || value <= 0)
@@ -71,7 +87,7 @@ static class UserInput
         return value;
     }
 
-    public static int GetIntInput(string message)
+    public int GetIntInput(string message)
     {
         Console.Write(message);
         if (!int.TryParse(Console.ReadLine(), out int value) || value <= 0)
@@ -83,23 +99,42 @@ static class UserInput
     }
 }
 
-static class FuelCalculator
+class FuelCalculator
 {
-    public static double CalculateFuelCost(double consumption, double distance, double fuelPrice)
+    private double Consumption { get; }
+    private double Distance { get; }
+    private double FuelPrice { get; }
+
+    public FuelCalculator(double consumption, double distance, double fuelPrice)
     {
-        return (distance / 100.0) * consumption * fuelPrice;
+        Consumption = consumption;
+        Distance = distance;
+        FuelPrice = fuelPrice;
+    }
+
+    public double CalculateFuelCost()
+    {
+        return (Distance / 100.0) * Consumption * FuelPrice;
+    }
+
+    // for example!!!
+    ~FuelCalculator()
+    {
+        Console.WriteLine("Об'єкт FuelCalculator знищено");
     }
 }
 
-static class CurrencyConverter
+class CurrencyConverter
 {
-    public static string GetCurrency()
+    public CurrencyConverter() { }
+
+    public string GetCurrency()
     {
         Console.Write("Оберіть валюту (грн/usd/eur/pln): ");
         return Console.ReadLine().ToLower();
     }
 
-    public static double GetCurrencyRate(string currency)
+    public double GetCurrencyRate(string currency)
     {
         return currency switch
         {
@@ -110,7 +145,7 @@ static class CurrencyConverter
         };
     }
 
-    public static void DisplayConvertedCosts(double totalCost, double monthlyCost, double yearlyCost, string currency, double rate)
+    public void DisplayConvertedCosts(double totalCost, double monthlyCost, double yearlyCost, string currency, double rate)
     {
         Console.WriteLine($"Витрати у {currency.ToUpper()}: {totalCost / rate:F2}");
         Console.WriteLine($"Місячні витрати у {currency.ToUpper()}: {monthlyCost / rate:F2}");
