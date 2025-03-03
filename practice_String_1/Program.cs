@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 class Program
 {
@@ -6,31 +7,32 @@ class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
 
-        string fuelType = FuelCalculator.GetFuelType();
-        double fuelPrice = FuelCalculator.GetFuelPrice(fuelType);
+        string fuelType = FuelInput.GetFuelType();
+        double fuelPrice = FuelInput.GetFuelPrice(fuelType);
         if (fuelPrice == 0) return;
 
-        double consumption = FuelCalculator.GetDoubleInput("Введіть витрату (л/100 км або кВт⋅год/100 км для електро): ");
-        double distance = FuelCalculator.GetDoubleInput("Введіть пройдену відстань (км): ");
+        double consumption = UserInput.GetDoubleInput("Введіть витрату (л/100 км або кВт⋅год/100 км для електро): ");
+        double distance = UserInput.GetDoubleInput("Введіть пройдену відстань (км): ");
 
         double totalCost = FuelCalculator.CalculateFuelCost(consumption, distance, fuelPrice);
         Console.WriteLine($"Витрати на паливо: {totalCost:F2} грн.");
 
-        int tripsPerMonth = FuelCalculator.GetIntInput("Введіть кількість таких поїздок на місяць: ");
+        int tripsPerMonth = UserInput.GetIntInput("Введіть кількість таких поїздок на місяць: ");
         double monthlyCost = totalCost * tripsPerMonth;
         double yearlyCost = monthlyCost * 12;
 
         Console.WriteLine($"Місячні витрати: {monthlyCost:F2} грн.");
         Console.WriteLine($"Річні витрати: {yearlyCost:F2} грн.");
 
-        string currency = FuelCalculator.GetCurrency();
-        double currencyRate = FuelCalculator.GetCurrencyRate(currency);
+        string currency = CurrencyConverter.GetCurrency();
+        double currencyRate = CurrencyConverter.GetCurrencyRate(currency);
 
-        FuelCalculator.DisplayConvertedCosts(totalCost, monthlyCost, yearlyCost, currency, currencyRate);
+        CurrencyConverter.DisplayConvertedCosts(totalCost, monthlyCost, yearlyCost, currency, currencyRate);
     }
 }
 
-class FuelCalculator {
+static class FuelInput
+{
     public static string GetFuelType()
     {
         Console.Write("Введіть тип палива (бензин/дизель/газ/електрика): ");
@@ -54,7 +56,10 @@ class FuelCalculator {
         Console.WriteLine("Невідомий тип палива.");
         return 0;
     }
+}
 
+static class UserInput
+{
     public static double GetDoubleInput(string message)
     {
         Console.Write(message);
@@ -76,12 +81,18 @@ class FuelCalculator {
         }
         return value;
     }
+}
 
+static class FuelCalculator
+{
     public static double CalculateFuelCost(double consumption, double distance, double fuelPrice)
     {
         return (distance / 100.0) * consumption * fuelPrice;
     }
+}
 
+static class CurrencyConverter
+{
     public static string GetCurrency()
     {
         Console.Write("Оберіть валюту (грн/usd/eur/pln): ");
