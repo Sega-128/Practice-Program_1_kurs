@@ -1,41 +1,43 @@
 ﻿using System.Text;
 
-class FuelCalculator
+class Program
 {
     static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
 
-        string fuelType = GetFuelType();
-        double fuelPrice = GetFuelPrice(fuelType);
+        string fuelType = FuelCalculator.GetFuelType();
+        double fuelPrice = FuelCalculator.GetFuelPrice(fuelType);
         if (fuelPrice == 0) return;
 
-        double consumption = GetDoubleInput("Введіть витрату (л/100 км або кВт⋅год/100 км для електро): ");
-        double distance = GetDoubleInput("Введіть пройдену відстань (км): ");
+        double consumption = FuelCalculator.GetDoubleInput("Введіть витрату (л/100 км або кВт⋅год/100 км для електро): ");
+        double distance = FuelCalculator.GetDoubleInput("Введіть пройдену відстань (км): ");
 
-        double totalCost = CalculateFuelCost(consumption, distance, fuelPrice);
+        double totalCost = FuelCalculator.CalculateFuelCost(consumption, distance, fuelPrice);
         Console.WriteLine($"Витрати на паливо: {totalCost:F2} грн.");
 
-        int tripsPerMonth = GetIntInput("Введіть кількість таких поїздок на місяць: ");
+        int tripsPerMonth = FuelCalculator.GetIntInput("Введіть кількість таких поїздок на місяць: ");
         double monthlyCost = totalCost * tripsPerMonth;
         double yearlyCost = monthlyCost * 12;
 
         Console.WriteLine($"Місячні витрати: {monthlyCost:F2} грн.");
         Console.WriteLine($"Річні витрати: {yearlyCost:F2} грн.");
 
-        string currency = GetCurrency();
-        double currencyRate = GetCurrencyRate(currency);
+        string currency = FuelCalculator.GetCurrency();
+        double currencyRate = FuelCalculator.GetCurrencyRate(currency);
 
-        DisplayConvertedCosts(totalCost, monthlyCost, yearlyCost, currency, currencyRate);
+        FuelCalculator.DisplayConvertedCosts(totalCost, monthlyCost, yearlyCost, currency, currencyRate);
     }
+}
 
-    static string GetFuelType()
+class FuelCalculator {
+    public static string GetFuelType()
     {
         Console.Write("Введіть тип палива (бензин/дизель/газ/електрика): ");
         return Console.ReadLine().ToLower();
     }
 
-    static double GetFuelPrice(string fuelType)
+    public static double GetFuelPrice(string fuelType)
     {
         return fuelType switch
         {
@@ -47,13 +49,13 @@ class FuelCalculator
         };
     }
 
-    static double InvalidFuel()
+    public static double InvalidFuel()
     {
         Console.WriteLine("Невідомий тип палива.");
         return 0;
     }
 
-    static double GetDoubleInput(string message)
+    public static double GetDoubleInput(string message)
     {
         Console.Write(message);
         if (!double.TryParse(Console.ReadLine(), out double value) || value <= 0)
@@ -64,7 +66,7 @@ class FuelCalculator
         return value;
     }
 
-    static int GetIntInput(string message)
+    public static int GetIntInput(string message)
     {
         Console.Write(message);
         if (!int.TryParse(Console.ReadLine(), out int value) || value <= 0)
@@ -75,18 +77,18 @@ class FuelCalculator
         return value;
     }
 
-    static double CalculateFuelCost(double consumption, double distance, double fuelPrice)
+    public static double CalculateFuelCost(double consumption, double distance, double fuelPrice)
     {
         return (distance / 100.0) * consumption * fuelPrice;
     }
 
-    static string GetCurrency()
+    public static string GetCurrency()
     {
         Console.Write("Оберіть валюту (грн/usd/eur/pln): ");
         return Console.ReadLine().ToLower();
     }
 
-    static double GetCurrencyRate(string currency)
+    public static double GetCurrencyRate(string currency)
     {
         return currency switch
         {
@@ -97,7 +99,7 @@ class FuelCalculator
         };
     }
 
-    static void DisplayConvertedCosts(double totalCost, double monthlyCost, double yearlyCost, string currency, double rate)
+    public static void DisplayConvertedCosts(double totalCost, double monthlyCost, double yearlyCost, string currency, double rate)
     {
         Console.WriteLine($"Витрати у {currency.ToUpper()}: {totalCost / rate:F2}");
         Console.WriteLine($"Місячні витрати у {currency.ToUpper()}: {monthlyCost / rate:F2}");
