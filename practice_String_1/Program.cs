@@ -9,7 +9,7 @@ double fuelPrice = 0;
 if (fuelType == "бензин") fuelPrice = 56.91;
 else if (fuelType == "дизель") fuelPrice = 55.30;
 else if (fuelType == "газ") fuelPrice = 36.98;
-else if (fuelType == "газ") fuelPrice = 6.50;
+else if (fuelType == "електрика") fuelPrice = 6.50;
 else
 {
     Console.WriteLine("Невідомий тип палива.");
