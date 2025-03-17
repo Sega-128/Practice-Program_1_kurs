@@ -1,29 +1,40 @@
 ﻿using System;
 
-public delegate void EventHandler(string message); 
+public delegate void KeyPressedHandler(object sender, ConsoleKeyInfo keyInfo);
 
-class EventSource
+class KeyListener
 {
-    public event EventHandler? OnChange; 
+    public event KeyPressedHandler? OnKeyPressed;
 
-    public void TriggerEvent(string message) 
+    public void StartListening()
     {
-        OnChange?.Invoke(message);
+        while (true)
+        {
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true); 
+            OnKeyPressed?.Invoke(this, keyInfo); 
+        }
     }
 }
 
 class Program
 {
-    static void ShowMessage(string msg) => Console.WriteLine($"Отримано повідомлення: {msg}"); 
-
     static void Main()
     {
-        EventSource source = new EventSource();
+        KeyListener listener = new KeyListener();
 
-        source.OnChange += ShowMessage;
+        listener.OnKeyPressed += (sender, keyInfo) =>
+        {
+            Console.WriteLine($"Ви натиснули: {keyInfo.Key}");
 
-        source.TriggerEvent("Привіт!"); 
+            if (keyInfo.Key == ConsoleKey.Escape)
+            {
+                Console.WriteLine("Програма завершена!");
+                Environment.Exit(0);
+            }
+        };
 
-        source.OnChange -= ShowMessage; 
+        Console.WriteLine("Натисніть клавішу (Esc - вихід)...");
+
+        listener.StartListening();
     }
 }
